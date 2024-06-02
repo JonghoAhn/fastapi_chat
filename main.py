@@ -1,18 +1,16 @@
 from fastapi import FastAPI, WebSocket, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
 
-# Static files and templates handling
-app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+# Static files configuration
+app.mount("/public", StaticFiles(directory="public"), name="public")
 
 # HTML serving for the chat client
 @app.get("/", response_class=HTMLResponse)
-async def get(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+async def get():
+    return HTMLResponse(content=open('public/index.html').read(), status_code=200)
 
 # WebSocket endpoint for real-time communication
 @app.websocket("/ws")
