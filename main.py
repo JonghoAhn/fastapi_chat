@@ -1,6 +1,7 @@
 from fastapi import FastAPI, WebSocket, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.websockets import WebSocketDisconnect
 
 app = FastAPI()
 
@@ -10,7 +11,9 @@ app.mount("/public", StaticFiles(directory="public"), name="public")
 # HTML serving for the chat client
 @app.get("/", response_class=HTMLResponse)
 async def get():
-    return HTMLResponse(content=open('public/index.html').read(), status_code=200)
+    with open('public/index.html', 'r') as f:
+        html_content = f.read()
+    return HTMLResponse(content=html_content, status_code=200)
 
 # WebSocket endpoint for real-time communication
 @app.websocket("/ws")
@@ -19,9 +22,10 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             data = await websocket.receive_text()
-            await websocket.send_text(f"Message received: {data}")
-    except Exception as e:
-        print(f"Error: {e}")
+            # Echo the same received message back to the client
+            await websocket.send_text(f"Echo: {data}")
+    except WebSocketDisconnect:
+        print("Client disconnected")
     finally:
         await websocket.close()
 
