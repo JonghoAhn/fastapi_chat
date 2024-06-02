@@ -17,7 +17,8 @@
 
         function connectWebSocket() {
             const username = document.getElementById('usernameInput').value;
-            ws = new WebSocket(`ws://localhost:8000/ws/${username}`);
+            // Update the WebSocket URL to use the provided server address
+            ws = new WebSocket(`wss://port-0-fastapi-chat-1272llwx73p0i.sel5.cloudtype.app/ws/${username}`);
 
             ws.onmessage = function(event) {
                 const messages = document.getElementById('messages');
@@ -37,9 +38,10 @@
             const input = document.getElementById('messageInput');
             if (input.value) {
                 ws.send(input.value);
-                input.value = '';
+                input.value = ''; // Clear the input field
             }
         }
     </script>
 </body>
 </html>
+
